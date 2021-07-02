@@ -210,11 +210,3 @@ class PictureOfTheDayFragment : Fragment() {
         private var isMain = true
     }
 }
-
-private fun String.Companion.format() {
-    TODO("Not yet implemented")
-}
-
-private fun String.Companion.format() {
-    TODO("Not yet implemented")
-}
