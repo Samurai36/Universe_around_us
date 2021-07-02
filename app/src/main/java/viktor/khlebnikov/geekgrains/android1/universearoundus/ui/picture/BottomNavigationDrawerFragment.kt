@@ -19,8 +19,8 @@ class BottomNavigationDrawerFragment : BottomSheetDialogFragment() {
         return inflater.inflate(R.layout.bottom_navigation_layout, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         navigation_view.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
