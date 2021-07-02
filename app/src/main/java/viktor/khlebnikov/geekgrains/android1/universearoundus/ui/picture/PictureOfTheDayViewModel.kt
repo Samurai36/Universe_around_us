@@ -20,12 +20,12 @@ class PictureOfTheDayViewModel(
     }
 
     private fun sendServerRequest() {
-        liveDataForViewToObserve.value = PictureOfTheDayData.Loading(null)
+        liveDataForViewToObserve.value = PictureOfTheDayData.Loading
         val apiKey: String = BuildConfig.NASA_API_KEY
         if (apiKey.isBlank()) {
             PictureOfTheDayData.Error(Throwable("You need API key"))
         } else {
-            retrofitImpl.getRetrofitImpl().getPictureOfTheDay(apiKey).enqueue(object :
+            retrofitImpl.getRetrofitImpl().getPictureOfTheDay(date, apiKey).enqueue(object :
                 Callback<PODServerResponseData> {
                 override fun onResponse(
                     call: Call<PODServerResponseData>,
@@ -50,6 +50,7 @@ class PictureOfTheDayViewModel(
                     liveDataForViewToObserve.value = PictureOfTheDayData.Error(t)
                 }
             })
+
         }
     }
 }
