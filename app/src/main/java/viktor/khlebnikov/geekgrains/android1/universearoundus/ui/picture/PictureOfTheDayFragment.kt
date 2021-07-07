@@ -22,21 +22,18 @@ import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.android.synthetic.main.main_fragment.chipGroup
 import kotlinx.android.synthetic.main.main_fragment.view.*
 import viktor.khlebnikov.geekgrains.android1.universearoundus.R
+import viktor.khlebnikov.geekgrains.android1.universearoundus.databinding.MainFragmentBinding
 import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.MainActivity
 import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.chips.ChipsFragment
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
 
-@RequiresApi(Build.VERSION_CODES.N)
-val c = Calendar.getInstance()
-
-@RequiresApi(Build.VERSION_CODES.N)
-val year = c.get(Calendar.YEAR)
-
-@RequiresApi(Build.VERSION_CODES.N)
-val month = c.get(Calendar.MONTH)
-
-@RequiresApi(Build.VERSION_CODES.N)
-val day = c.get(Calendar.DAY_OF_MONTH)
-var date: String = String.format("%d-%02d-%02d", year, month, day)
+@RequiresApi(Build.VERSION_CODES.O)
+var formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+@RequiresApi(Build.VERSION_CODES.O)
+val datenow = LocalDate.now()
+lateinit var date: LocalDate
 
 class PictureOfTheDayFragment : Fragment() {
 
@@ -52,9 +49,10 @@ class PictureOfTheDayFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.main_fragment, container, false)
+        return MainFragmentBinding.inflate(inflater, container, false).root
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setBottomSheetBehavior(view.findViewById(R.id.bottom_sheet_container))
@@ -63,25 +61,28 @@ class PictureOfTheDayFragment : Fragment() {
                 data = Uri.parse("https://ru.wikipedia.org/wiki/${input_edit_text.text.toString()}")
             })
         }
-
+        date = datenow
         chipGroup.setOnCheckedChangeListener { chipGroup, checkedChipIds ->
             chipGroup.findViewById<Chip>(checkedChipIds)?.let {
 
                 when (it) {
+                    chiptwodaysago -> {
+                        date = datenow
+                        var period = Period.of(0, 0, 2)
+                        date = date.minus(period)
+                        Toast.makeText(context, "Показать $date", Toast.LENGTH_LONG).show()
+                        renderData()
+                    }
                     chipyesterday -> {
-                        String.format("%d-%02d-%02d", year, month, day)
-                        date = String.format("%d-%02d-%02d", year, month, (day - 1))
-                        Toast.makeText(context, "Показать $date", Toast.LENGTH_SHORT).show()
+                        date = datenow
+                        var period = Period.of(0, 0, 1)
+                        date = date.minus(period)
+                        Toast.makeText(context, "Показать $date", Toast.LENGTH_LONG).show()
                         renderData()
                     }
                     chiptoday -> {
-                        date = String.format("%d-%02d-%02d", year, month, day)
-                        Toast.makeText(context, "Показать $date", Toast.LENGTH_SHORT).show()
-                        renderData()
-                    }
-                    chiptomorrow -> {
-                        date = String.format("%d-%02d-%02d", year, month, (day + 1))
-                        Toast.makeText(context, "Показать $date", Toast.LENGTH_SHORT).show()
+                        date = datenow
+                        Toast.makeText(context, "Показать $date", Toast.LENGTH_LONG).show()
                         renderData()
                     }
                 }

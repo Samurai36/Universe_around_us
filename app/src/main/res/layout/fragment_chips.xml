@@ -64,8 +64,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Chip icon"
-            app:iconStartPadding="10dp"
-            app:chipIcon="@drawable/ic_archive" />
+            app:chipIcon="@drawable/ic_archive"
+            app:iconStartPadding="10dp" />
     </LinearLayout>
 
     <com.google.android.material.chip.ChipGroup
@@ -198,7 +198,24 @@
         style="@style/Widget.MaterialComponents.Chip.Entry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:layout_marginTop="24dp"
         android:text="Close Icon Listener" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:text="Change theme"
+        android:textSize="18sp" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switch_theme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textOff="Default Theme"
+        android:textOn="Wow Theme"
+        app:showText="true" />
+
 </LinearLayout>

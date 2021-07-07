@@ -1,5 +1,7 @@
 package viktor.khlebnikov.geekgrains.android1.universearoundus.ui.picture
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,6 +21,7 @@ class PictureOfTheDayViewModel(
         return liveDataForViewToObserve
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun sendServerRequest() {
         liveDataForViewToObserve.value = PictureOfTheDayData.Loading
         val apiKey: String = BuildConfig.NASA_API_KEY

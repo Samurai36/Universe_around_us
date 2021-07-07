@@ -9,7 +9,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="two_days_ago_picture">two days ago</string>
     <string name="yesterday_picture">yesterday</string>
     <string name="today_picture">today</string>
-    <string name="tomorrow_picture">tomorrow</string>
 </resources>
