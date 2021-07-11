@@ -66,10 +66,10 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <viktor.khlebnikov.geekgrains.android1.universearoundus.ui.util.EquilateralImageView
+            <com.github.chrisbanes.photoview.PhotoView
                 android:id="@+id/image_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="500dp"
                 android:layout_gravity="center"
                 android:contentDescription="@string/photo_of_the_day_stub"
                 android:scaleType="fitCenter"

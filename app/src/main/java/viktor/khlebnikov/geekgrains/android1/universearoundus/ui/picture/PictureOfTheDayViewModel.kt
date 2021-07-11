@@ -16,6 +16,7 @@ class PictureOfTheDayViewModel(
 ) :
     ViewModel() {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getData(): LiveData<PictureOfTheDayData> {
         sendServerRequest()
         return liveDataForViewToObserve

@@ -9,7 +9,7 @@
         <item name="bottomAppBarStyle">@style/Widget.MaterialComponents.BottomAppBar.Colored</item>
     </style>
 
-    <style name="Widget.App.Chip" parent="Widget.MaterialComponents.Chip.Entry">
+    <style name="Widget.App.Chip" parent="Widget.MaterialComponents.Chip.Choice">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.Chip</item>
         <item name="android:textAppearance">@style/TextAppearance.App.Body2</item>
         <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>

@@ -17,6 +17,7 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="anti_colorPrimaryDark">#A65500</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent40Alfa">#662962FF</color>
     <color name="anti_colorAccent">#9FEE00</color>
     <color name="color_gray">#66000000</color>
 </resources>

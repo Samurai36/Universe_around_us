@@ -9,10 +9,10 @@ import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.picture.Picture
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         setTheme(
             ThemeHolder.theme
         )
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()

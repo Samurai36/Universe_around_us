@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.main_fragment.view.*
 import viktor.khlebnikov.geekgrains.android1.universearoundus.R
 import viktor.khlebnikov.geekgrains.android1.universearoundus.databinding.MainFragmentBinding
 import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.MainActivity
+import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.api.ApiActivity
 import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.chips.ChipsFragment
 import java.time.LocalDate
 import java.time.Period
@@ -96,6 +97,7 @@ class PictureOfTheDayFragment : Fragment() {
         renderData()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun renderData() {
         viewModel.getData()
             .observe(viewLifecycleOwner, { renderData(it) })
@@ -118,6 +120,7 @@ class PictureOfTheDayFragment : Fragment() {
                     view?.postDelayed({ bottomNavigationDrawerFragment.dismiss() }, 3000)
                 }
             }
+            R.id.app_bar_api -> activity?.let { startActivity(Intent(it, ApiActivity::class.java)) }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -180,23 +183,6 @@ class PictureOfTheDayFragment : Fragment() {
     private fun setBottomSheetBehavior(bottomSheet: ConstraintLayout) {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-//        bottomSheetBehavior.addBottomSheetCallback(object :
-//            BottomSheetBehavior.BottomSheetCallback() {
-//            override fun onStateChanged(bottomSheet: View, newState: Int) {
-//                when (newState) {
-//                    BottomSheetBehavior.STATE_DRAGGING -> toast("STATE_DRAGGING")
-//                    BottomSheetBehavior.STATE_COLLAPSED -> toast("STATE_COLLAPSED")
-//                    BottomSheetBehavior.STATE_EXPANDED -> toast("STATE_EXPANDED")
-//                    BottomSheetBehavior.STATE_HALF_EXPANDED -> toast("STATE_HALF_EXPANDED")
-//                    BottomSheetBehavior.STATE_HIDDEN -> toast("STATE_HIDDEN")
-//                    BottomSheetBehavior.STATE_SETTLING -> toast("STATE_SETTLING")
-//                }
-//            }
-//
-//            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-//                toast("not implemented")
-//            }
-//        })
     }
 
     private fun Fragment.toast(string: String?) {
