@@ -13,4 +13,8 @@
     <string name="two_days_ago_picture">two days ago</string>
     <string name="yesterday_picture">yesterday</string>
     <string name="today_picture">today</string>
+    <string name="change_theme">Change theme</string>
+    <string name="close_icon_listener">Close Icon Listener</string>
+    <string name="default_theme">Default Theme</string>
+    <string name="wow_theme">Wow Theme</string>
 </resources>

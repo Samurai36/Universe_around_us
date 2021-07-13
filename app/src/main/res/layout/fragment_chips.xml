@@ -199,14 +199,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Close Icon Listener" />
+        android:text="@string/close_icon_listener" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="8dp"
-        android:text="Change theme"
+        android:text="@string/change_theme"
         android:textSize="18sp" />
 
     <androidx.appcompat.widget.SwitchCompat
@@ -214,8 +214,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textOff="Default Theme"
-        android:textOn="Wow Theme"
+        android:textOff="@string/default_theme"
+        android:textOn="@string/wow_theme"
         app:showText="true" />
 
 </LinearLayout>

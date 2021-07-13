@@ -19,6 +19,7 @@ class ApiActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_api)
         view_pager.adapter = ViewPagerAdapter(supportFragmentManager)
+        view_pager.setPageTransformer(true, ZoomOutPageTransformer())
         tab_layout.setupWithViewPager(view_pager)
         setHighlightedTab(TODAY)
 
