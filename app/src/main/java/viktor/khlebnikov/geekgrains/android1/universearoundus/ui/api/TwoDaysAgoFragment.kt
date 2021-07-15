@@ -38,7 +38,7 @@ class TwoDaysAgoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         date = datenow
-        var period = Period.of(0, 0, 2)
+        val period = Period.of(0, 0, 2)
         date = date.minus(period)
         PictureTitle = view.findViewById(R.id.title)
         renderData()

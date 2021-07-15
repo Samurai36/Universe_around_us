@@ -1,11 +1,17 @@
 package viktor.khlebnikov.geekgrains.android1.universearoundus.ui.picture
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.icu.util.Calendar
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.transition.ChangeBounds
+import android.transition.ChangeImageTransform
+import android.transition.TransitionManager
+import android.transition.TransitionSet
 import android.view.*
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -18,6 +24,7 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.fragment_chips.*
+import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.android.synthetic.main.main_fragment.chipGroup
 import kotlinx.android.synthetic.main.main_fragment.view.*
@@ -32,12 +39,14 @@ import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 var formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+
 @RequiresApi(Build.VERSION_CODES.O)
 val datenow = LocalDate.now()
 lateinit var date: LocalDate
 
 class PictureOfTheDayFragment : Fragment() {
 
+    private var isExpanded = false
     private lateinit var bottomSheetHeader: TextView
     private lateinit var bottomSheetContent: TextView
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
@@ -94,6 +103,28 @@ class PictureOfTheDayFragment : Fragment() {
         bottomSheetContent = view.findViewById(R.id.bottom_sheet_description)
         setBottomAppBar(view)
 
+        image_view.setOnClickListener {
+            isExpanded = !isExpanded
+            TransitionManager.beginDelayedTransition(
+                main, TransitionSet()
+                    .addTransition(ChangeBounds())
+                    .addTransition(ChangeImageTransform())
+            )
+
+            val params: ViewGroup.LayoutParams = image_view.layoutParams
+            params.height =
+                if (isExpanded) ViewGroup.LayoutParams.MATCH_PARENT else ViewGroup.LayoutParams.WRAP_CONTENT
+            image_view.layoutParams = params
+            image_view.scaleType =
+                if (isExpanded) ImageView.ScaleType.CENTER_CROP else ImageView.ScaleType.FIT_CENTER
+        }
+
+        wiki_button.setOnClickListener {
+            if (!isExpanded) {
+                isExpanded = true
+                ObjectAnimator.ofFloat(wiki_button, "rotation", 0f, 360f).start()
+            }
+        }
         renderData()
     }
 
@@ -137,6 +168,7 @@ class PictureOfTheDayFragment : Fragment() {
                     toast("ссылка пустая")
                 } else {
                     //showSuccess()
+                    textview_url.text = url
                     image_view.load(url) {
                         lifecycle(this@PictureOfTheDayFragment)
                         error(R.drawable.ic_load_error_vector)

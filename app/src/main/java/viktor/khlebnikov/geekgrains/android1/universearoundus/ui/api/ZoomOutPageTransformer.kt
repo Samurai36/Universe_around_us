@@ -3,7 +3,7 @@ package viktor.khlebnikov.geekgrains.android1.universearoundus.ui.api
 import android.view.View
 import androidx.viewpager.widget.ViewPager
 
-private const val MIN_SCALE = 0.85f
+private const val MIN_SCALE = 0.75f
 private const val MIN_ALPHA = 0.5f
 
 class ZoomOutPageTransformer : ViewPager.PageTransformer {
