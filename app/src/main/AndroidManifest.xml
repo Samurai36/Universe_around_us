@@ -19,5 +19,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.api.ApiActivity"/>
+        <activity android:name=".ui.recycler.RecyclerActivity"/>
     </application>
 </manifest>

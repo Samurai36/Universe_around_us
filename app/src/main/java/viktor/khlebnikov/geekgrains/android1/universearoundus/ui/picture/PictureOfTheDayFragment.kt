@@ -1,8 +1,8 @@
 package viktor.khlebnikov.geekgrains.android1.universearoundus.ui.picture
 
+import android.R.attr.name
 import android.animation.ObjectAnimator
 import android.content.Intent
-import android.icu.util.Calendar
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -23,7 +23,9 @@ import coil.api.load
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
+import kotlinx.android.synthetic.main.bottom_sheet_layout.*
 import kotlinx.android.synthetic.main.fragment_chips.*
+import kotlinx.android.synthetic.main.fragment_note_editor.*
 import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.android.synthetic.main.main_fragment.chipGroup
@@ -33,9 +35,11 @@ import viktor.khlebnikov.geekgrains.android1.universearoundus.databinding.MainFr
 import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.MainActivity
 import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.api.ApiActivity
 import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.chips.ChipsFragment
+import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.recycler.RecyclerActivity
 import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 var formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
@@ -45,6 +49,15 @@ val datenow = LocalDate.now()
 lateinit var date: LocalDate
 
 class PictureOfTheDayFragment : Fragment() {
+
+    var DIALOG_DATE = 1
+    @RequiresApi(Build.VERSION_CODES.O)
+    var myYear = datenow.getYear()
+    @RequiresApi(Build.VERSION_CODES.O)
+    var myMonth = datenow.getMonth()
+    @RequiresApi(Build.VERSION_CODES.O)
+    var myDay = datenow.getDayOfMonth()
+    var tvDate: TextView? = null
 
     private var isExpanded = false
     private lateinit var bottomSheetHeader: TextView
@@ -125,6 +138,15 @@ class PictureOfTheDayFragment : Fragment() {
                 ObjectAnimator.ofFloat(wiki_button, "rotation", 0f, 360f).start()
             }
         }
+
+        save_btn_nasa.setOnClickListener {
+            val intent = Intent(activity, RecyclerActivity::class.java)
+            intent.putExtra("title", bottom_sheet_description_header.toString())
+            intent.putExtra("description", bottom_sheet_description.toString())
+            intent.putExtra("image", textview_url.toString())
+            intent.putExtra("date", datenow)
+        }
+
         renderData()
     }
 

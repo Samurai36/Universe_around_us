@@ -7,6 +7,9 @@
     <string name="more_detailed">more detailed</string>
     <string name="settings">settings</string>
     <string name="search">Search</string>
+    <string name="save">Save</string>
+    <string name="description_note">Description Note</string>
+    <string name="name_note">Name Note</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
