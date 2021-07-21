@@ -10,6 +10,8 @@
     <string name="save">Save</string>
     <string name="description_note">Description Note</string>
     <string name="name_note">Name Note</string>
+    <string name="span_that">that</string>
+    <string name="span_color">color</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -1,11 +1,16 @@
 package viktor.khlebnikov.geekgrains.android1.universearoundus.ui.picture
 
-import android.R.attr.name
 import android.animation.ObjectAnimator
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.BackgroundColorSpan
+import android.text.style.ForegroundColorSpan
 import android.transition.ChangeBounds
 import android.transition.ChangeImageTransform
 import android.transition.TransitionManager
@@ -51,10 +56,13 @@ lateinit var date: LocalDate
 class PictureOfTheDayFragment : Fragment() {
 
     var DIALOG_DATE = 1
+
     @RequiresApi(Build.VERSION_CODES.O)
     var myYear = datenow.getYear()
+
     @RequiresApi(Build.VERSION_CODES.O)
     var myMonth = datenow.getMonth()
+
     @RequiresApi(Build.VERSION_CODES.O)
     var myDay = datenow.getDayOfMonth()
     var tvDate: TextView? = null
@@ -147,7 +155,56 @@ class PictureOfTheDayFragment : Fragment() {
             intent.putExtra("date", datenow)
         }
 
+        activity?.let {
+            bottomSheetContent.typeface =
+                Typeface.createFromAsset(it.assets, "falling-sky-font/FallingSkyBoldplus-6GZ1.otf")
+        }
+
         renderData()
+    }
+
+    fun spanVidelenieSlov() {
+
+        val videlenie = requireContext().getString(R.string.span_that)
+        val videlenie2 = requireContext().getString(R.string.span_color)
+
+        val spannable = SpannableStringBuilder(bottomSheetContent.text)
+        val matcher = videlenie.toRegex()
+        val matcher2 = videlenie2.toRegex()
+        val first = matcher.find(spannable.toString())?.range?.first
+        val last = matcher.find(spannable.toString())?.range?.last
+
+        val foregroundSpan = ForegroundColorSpan(Color.RED)
+
+        if (first != null && last!= null) {
+            spannable.setSpan(foregroundSpan, first, last+1, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        }
+
+        if (first != null && last!= null) {
+            spannable.setSpan(
+                BackgroundColorSpan(
+                    ContextCompat.getColor(requireContext(), R.color.anti_colorAccent)
+                ),
+                first,
+                last+1,
+                Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+            )
+        }
+
+        matcher2.find(spannable.toString())?.range?.first?.let {
+            matcher2.find(spannable.toString())?.range?.last?.let { it1 ->
+                spannable.setSpan(
+                    ForegroundColorSpan(
+                        ContextCompat.getColor(requireContext(), R.color.anti_teal_700)
+                    ),
+                    it,
+                    it1+1,
+                    Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+                )
+            }
+        }
+
+        bottomSheetContent.text = spannable
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -198,6 +255,7 @@ class PictureOfTheDayFragment : Fragment() {
                     }
                     bottomSheetHeader.text = serverResponseData.title
                     bottomSheetContent.text = serverResponseData.explanation
+                    spanVidelenieSlov()
                 }
             }
             is PictureOfTheDayData.Loading -> {
