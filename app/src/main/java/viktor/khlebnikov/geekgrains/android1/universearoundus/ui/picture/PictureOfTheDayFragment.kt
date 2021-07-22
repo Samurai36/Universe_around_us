@@ -55,18 +55,6 @@ lateinit var date: LocalDate
 
 class PictureOfTheDayFragment : Fragment() {
 
-    var DIALOG_DATE = 1
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    var myYear = datenow.getYear()
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    var myMonth = datenow.getMonth()
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    var myDay = datenow.getDayOfMonth()
-    var tvDate: TextView? = null
-
     private var isExpanded = false
     private lateinit var bottomSheetHeader: TextView
     private lateinit var bottomSheetContent: TextView
@@ -176,17 +164,18 @@ class PictureOfTheDayFragment : Fragment() {
 
         val foregroundSpan = ForegroundColorSpan(Color.RED)
 
+
         if (first != null && last!= null) {
             spannable.setSpan(foregroundSpan, first, last+1, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
         }
 
-        if (first != null && last!= null) {
+        if (first != null && last != null) {
             spannable.setSpan(
                 BackgroundColorSpan(
                     ContextCompat.getColor(requireContext(), R.color.anti_colorAccent)
                 ),
                 first,
-                last+1,
+                last + 1,
                 Spannable.SPAN_EXCLUSIVE_INCLUSIVE
             )
         }
@@ -198,7 +187,7 @@ class PictureOfTheDayFragment : Fragment() {
                         ContextCompat.getColor(requireContext(), R.color.anti_teal_700)
                     ),
                     it,
-                    it1+1,
+                    it1 + 1,
                     Spannable.SPAN_EXCLUSIVE_INCLUSIVE
                 )
             }
