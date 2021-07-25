@@ -11,6 +11,7 @@
         android:id="@+id/date_recycler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="15dp"
         app:layout_constraintEnd_toEndOf="@+id/nasaImageView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -20,6 +21,7 @@
         android:id="@+id/nasaImageView"
         android:layout_width="80dp"
         android:layout_height="80dp"
+        android:layout_margin="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/date_recycler"
         app:srcCompat="@drawable/ic_no_photo_vector" />
@@ -28,12 +30,14 @@
         android:id="@+id/nasaTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="6"
+        android:layout_margin="15dp"
+        android:ems="5"
         android:textSize="35sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/nasaImageView"
         app:layout_constraintStart_toEndOf="@+id/nasaImageView"
         app:layout_constraintTop_toTopOf="@+id/nasaImageView"
+        app:layout_constraintVertical_bias="0.727"
         tools:text="Заголовок " />
 
     <TextView

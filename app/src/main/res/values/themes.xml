@@ -72,4 +72,9 @@
         <item name="cornerFamily">cut</item>
         <item name="cornerSize">4dp</item>
     </style>
+
+    <style name="Theme.UniverseAroundUs.Splash">
+        <item name="android:windowBackground">@drawable/splash_background_drawable</item>
+    </style>
+
 </resources>

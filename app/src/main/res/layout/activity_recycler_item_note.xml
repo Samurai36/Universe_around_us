@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tool="http://schemas.android.com/tools"
     app:cardCornerRadius="15dp"
     app:cardElevation="3dp">
 
@@ -22,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Title"/>
+                tool:text="Title"/>
         </LinearLayout>
 
         <TextView
@@ -30,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Description" />
+            tool:text="Description" />
 
         <TextView
             android:id="@+id/date"
@@ -38,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="end"
-            android:text="TextView" />
+            tool:text="TextView" />
 
     </LinearLayout>
 </FrameLayout>

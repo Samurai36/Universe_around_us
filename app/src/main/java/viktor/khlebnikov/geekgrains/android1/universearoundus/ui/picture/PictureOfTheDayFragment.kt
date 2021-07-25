@@ -52,20 +52,9 @@ var formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 @RequiresApi(Build.VERSION_CODES.O)
 val datenow = LocalDate.now()
 lateinit var date: LocalDate
+val bundle = Bundle()
 
 class PictureOfTheDayFragment : Fragment() {
-
-    var DIALOG_DATE = 1
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    var myYear = datenow.getYear()
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    var myMonth = datenow.getMonth()
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    var myDay = datenow.getDayOfMonth()
-    var tvDate: TextView? = null
 
     private var isExpanded = false
     private lateinit var bottomSheetHeader: TextView
@@ -92,6 +81,7 @@ class PictureOfTheDayFragment : Fragment() {
                 data = Uri.parse("https://ru.wikipedia.org/wiki/${input_edit_text.text.toString()}")
             })
         }
+
         date = datenow
         chipGroup.setOnCheckedChangeListener { chipGroup, checkedChipIds ->
             chipGroup.findViewById<Chip>(checkedChipIds)?.let {
@@ -148,11 +138,11 @@ class PictureOfTheDayFragment : Fragment() {
         }
 
         save_btn_nasa.setOnClickListener {
-            val intent = Intent(activity, RecyclerActivity::class.java)
-            intent.putExtra("title", bottom_sheet_description_header.toString())
-            intent.putExtra("description", bottom_sheet_description.toString())
-            intent.putExtra("image", textview_url.toString())
-            intent.putExtra("date", datenow)
+            bundle.putString("title", bottom_sheet_description_header.text.toString())
+            bundle.putString("description", bottom_sheet_description.text.toString())
+            bundle.putString("image", textview_url.text.toString())
+            bundle.putString("date", datenow.toString())
+            bundle.putString("URL", textview_url.text.toString())
         }
 
         activity?.let {
@@ -176,17 +166,18 @@ class PictureOfTheDayFragment : Fragment() {
 
         val foregroundSpan = ForegroundColorSpan(Color.RED)
 
-        if (first != null && last!= null) {
-            spannable.setSpan(foregroundSpan, first, last+1, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+
+        if (first != null && last != null) {
+            spannable.setSpan(foregroundSpan, first, last + 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
         }
 
-        if (first != null && last!= null) {
+        if (first != null && last != null) {
             spannable.setSpan(
                 BackgroundColorSpan(
                     ContextCompat.getColor(requireContext(), R.color.anti_colorAccent)
                 ),
                 first,
-                last+1,
+                last + 1,
                 Spannable.SPAN_EXCLUSIVE_INCLUSIVE
             )
         }
@@ -198,7 +189,7 @@ class PictureOfTheDayFragment : Fragment() {
                         ContextCompat.getColor(requireContext(), R.color.anti_teal_700)
                     ),
                     it,
-                    it1+1,
+                    it1 + 1,
                     Spannable.SPAN_EXCLUSIVE_INCLUSIVE
                 )
             }
