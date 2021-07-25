@@ -1,28 +1,23 @@
 package viktor.khlebnikov.geekgrains.android1.universearoundus.ui.recycler
 
-import android.graphics.Canvas
-import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.MotionEventCompat
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import coil.api.load
 import kotlinx.android.synthetic.main.activity_recycler.*
 import kotlinx.android.synthetic.main.activity_recycler_item_nasa.*
-import kotlinx.android.synthetic.main.activity_recycler_item_nasa.view.*
-import kotlinx.android.synthetic.main.activity_recycler_item_note.view.*
+import kotlinx.android.synthetic.main.bottom_sheet_layout.*
+import kotlinx.android.synthetic.main.main_fragment.*
 import viktor.khlebnikov.geekgrains.android1.universearoundus.R
-import kotlin.math.abs
+import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.picture.bundle
+import java.util.ArrayList
 
 class RecyclerActivity : AppCompatActivity() {
 
+    private lateinit var data: ArrayList<Pair<Data, Boolean>>
     private var isNewList = false
     private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var adapter: RecyclerActivityAdapter
@@ -31,30 +26,33 @@ class RecyclerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recycler)
 
-        val arguments = intent.extras
+        var title = ""
+        var description = ""
+        val date: String
+        val URL: String
+        val image: String
 
-        if (arguments != null) {
-            val title = arguments["title"].toString()
-            val description = arguments.getString("description")
-            val image = arguments.getString("image")
-            val dateNasa = arguments.getString("date")
-
-            nasaTitle.text = title
-            nasaDescriptionTextView.text = description
-            date_recycler.text = dateNasa
-            nasaImageView.load(image)
-        }
-
-        val data = arrayListOf(
-            Pair(Data(1, "Mars", "sec"), false)
+        if (!bundle.isEmpty) {
+            title = bundle.getString("title").toString()
+            date = bundle.getString("date").toString()
+            URL = bundle.getString("URL").toString()
+            description = bundle.getString("description").toString()
+            image = bundle.getString("image").toString()
+            data = arrayListOf(
+                Pair(Data(0, title, description, date, URL, image), false)
+            )
+        } else data = arrayListOf(
+            Pair(Data(0, title, description), false)
         )
-
-        data.add(0, Pair(Data(0, "Header"), false))
-
         adapter = RecyclerActivityAdapter(
             object : RecyclerActivityAdapter.OnListItemClickListener {
                 override fun onItemClick(data: Data) {
-                    Toast.makeText(this@RecyclerActivity, data.someText, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@RecyclerActivity,
+                        data.someTitle,
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
                 }
             },
             data,
@@ -64,13 +62,19 @@ class RecyclerActivity : AppCompatActivity() {
                 }
             }
         )
+        recyclerView.addItemDecoration(
+            DividerItemDecoration(
+                this,
+                LinearLayoutManager.VERTICAL
+            )
+        )
 
         recyclerView.adapter = adapter
         recyclerActivityFAB.setOnClickListener { adapter.appendItem() }
         itemTouchHelper = ItemTouchHelper(ItemTouchHelperCallback(adapter))
         itemTouchHelper.attachToRecyclerView(recyclerView)
         recyclerActivityDiffUtilFAB.setOnClickListener { changeAdapterData() }
-        //changeAdapterData()
+
     }
 
     private fun changeAdapterData() {
@@ -81,8 +85,8 @@ class RecyclerActivity : AppCompatActivity() {
     private fun createItemList(instanceNumber: Boolean): List<Pair<Data, Boolean>> {
         return when (instanceNumber) {
             false -> listOf(
-                Pair(Data(0, "Header"), false),
-                Pair(Data(1, "Mars", ""), false),
+                Pair(Data(0, "Mars", "", null), false),
+                Pair(Data(1, "Mars", "", "2020-20-12", ""), false),
                 Pair(Data(2, "Mars", ""), false),
                 Pair(Data(3, "Mars", ""), false),
                 Pair(Data(4, "Mars", ""), false),
@@ -90,9 +94,9 @@ class RecyclerActivity : AppCompatActivity() {
                 Pair(Data(6, "Mars", ""), false)
             )
             true -> listOf(
-                Pair(Data(0, "Header"), false),
+                Pair(Data(0, "Mars", ""), false),
                 Pair(Data(1, "Mars", ""), false),
-                Pair(Data(2, "Jupiter", ""), false),
+                Pair(Data(2, "Jupiter", "", "12.12.2020"), false),
                 Pair(Data(3, "Mars", ""), false),
                 Pair(Data(4, "Neptune", ""), false),
                 Pair(Data(5, "Saturn", ""), false),
@@ -100,305 +104,5 @@ class RecyclerActivity : AppCompatActivity() {
             )
         }
     }
-}
 
-class RecyclerActivityAdapter(
-    private val onListItemClickListener: OnListItemClickListener,
-    private var data: MutableList<Pair<Data, Boolean>>,
-    private val dragListener: OnStartDragListener
-) :
-    RecyclerView.Adapter<BaseViewHolder>(), ItemTouchHelperAdapter {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        return when (viewType) {
-            TYPE_NASA ->
-                NasaViewHolder(
-                    inflater.inflate(R.layout.activity_recycler_item_nasa, parent, false) as View
-                )
-            TYPE_NOTE -> NoteViewHolder(
-                inflater.inflate(R.layout.activity_recycler_item_note, parent, false) as View
-            )
-            else -> HeaderViewHolder(
-                inflater.inflate(R.layout.activity_recycler_item_header, parent, false) as View
-            )
-        }
-    }
-
-    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
-        holder.bind(data[position])
-    }
-
-    override fun onBindViewHolder(
-        holder: BaseViewHolder,
-        position: Int,
-        payloads: MutableList<Any>
-    ) {
-        if (payloads.isEmpty())
-            super.onBindViewHolder(holder, position, payloads)
-        else {
-            val combinedChange =
-                createCombinedPayload(payloads as List<Change<Pair<Data, Boolean>>>)
-            val oldData = combinedChange.oldData
-            val newData = combinedChange.newData
-
-            if (newData.first.someText != oldData.first.someText) {
-                holder.itemView.nasaTitle.text = newData.first.someText
-            }
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return data.size
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return when {
-            position == 0 -> TYPE_HEADER
-            data[position].first.someDescription.isNullOrBlank() -> TYPE_NOTE
-            else -> TYPE_NASA
-        }
-    }
-
-    override fun onItemMove(fromPosition: Int, toPosition: Int) {
-        data.removeAt(fromPosition).apply {
-            data.add(if (toPosition > fromPosition) toPosition - 1 else toPosition, this)
-        }
-        notifyItemMoved(fromPosition, toPosition)
-    }
-
-    override fun onItemDismiss(position: Int) {
-        data.removeAt(position)
-        notifyItemRemoved(position)
-    }
-
-    fun setItems(newItems: List<Pair<Data, Boolean>>) {
-        val result = DiffUtil.calculateDiff(DiffUtilCallback(data, newItems))
-        result.dispatchUpdatesTo(this)
-        data.clear()
-        data.addAll(newItems)
-    }
-
-    fun appendItem() {
-        data.add(generateItem())
-        notifyItemInserted(itemCount - 1)
-    }
-
-    private fun generateItem() = Pair(Data(1, "Mars", ""), false)
-
-    inner class DiffUtilCallback(
-        private var oldItems: List<Pair<Data, Boolean>>,
-        private var newItems: List<Pair<Data, Boolean>>
-    ) : DiffUtil.Callback() {
-
-        override fun getOldListSize(): Int = oldItems.size
-
-        override fun getNewListSize(): Int = newItems.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-            oldItems[oldItemPosition].first.id == newItems[newItemPosition].first.id
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-            oldItems[oldItemPosition].first.someText == newItems[newItemPosition].first.someText
-
-        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
-            val oldItem = oldItems[oldItemPosition]
-            val newItem = newItems[newItemPosition]
-
-            return Change(
-                oldItem,
-                newItem
-            )
-        }
-    }
-
-    inner class NoteViewHolder(view: View) : BaseViewHolder(view) {
-
-        override fun bind(dataItem: Pair<Data, Boolean>) {
-            if (layoutPosition != RecyclerView.NO_POSITION) {
-                itemView.title.text = dataItem.first.someDescription
-                itemView.description.setOnClickListener {
-                    onListItemClickListener.onItemClick(
-                        dataItem.first
-                    )
-                }
-            }
-        }
-    }
-
-    inner class NasaViewHolder(view: View) : BaseViewHolder(view), ItemTouchHelperViewHolder {
-
-        override fun bind(dataItem: Pair<Data, Boolean>) {
-            itemView.nasaImageView.setOnClickListener { onListItemClickListener.onItemClick(dataItem.first) }
-            itemView.removeItemImageView.setOnClickListener { removeItem() }
-            itemView.moveItemDown.setOnClickListener { moveDown() }
-            itemView.moveItemUp.setOnClickListener { moveUp() }
-            itemView.nasaDescriptionTextView.visibility =
-                if (dataItem.second) View.VISIBLE else View.GONE
-            itemView.nasaTitle.setOnClickListener { toggleText() }
-            itemView.dragHandleImageView.setOnTouchListener { _, event ->
-                if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
-                    dragListener.onStartDrag(this)
-                }
-                false
-            }
-        }
-
-        private fun addItem() {
-            data.add(layoutPosition, generateItem())
-            notifyItemInserted(layoutPosition)
-        }
-
-        private fun removeItem() {
-            data.removeAt(layoutPosition)
-            notifyItemRemoved(layoutPosition)
-        }
-
-        private fun moveUp() {
-            layoutPosition.takeIf { it > 1 }?.also { currentPosition ->
-                data.removeAt(currentPosition).apply {
-                    data.add(currentPosition - 1, this)
-                }
-                notifyItemMoved(currentPosition, currentPosition - 1)
-            }
-        }
-
-        private fun moveDown() {
-            layoutPosition.takeIf { it < data.size - 1 }?.also { currentPosition ->
-                data.removeAt(currentPosition).apply {
-                    data.add(currentPosition + 1, this)
-                }
-                notifyItemMoved(currentPosition, currentPosition + 1)
-            }
-        }
-
-        private fun toggleText() {
-            data[layoutPosition] = data[layoutPosition].let {
-                it.first to !it.second
-            }
-            notifyItemChanged(layoutPosition)
-        }
-
-        override fun onItemSelected() {
-            itemView.setBackgroundColor(Color.LTGRAY)
-        }
-
-        override fun onItemClear() {
-            itemView.setBackgroundColor(Color.WHITE)
-        }
-    }
-
-    inner class HeaderViewHolder(view: View) : BaseViewHolder(view) {
-
-        override fun bind(dataItem: Pair<Data, Boolean>) {
-            itemView.setOnClickListener {
-                onListItemClickListener.onItemClick(dataItem.first)
-//                data[1] = Pair(Data("Jupiter", ""), false)
-//                notifyItemChanged(1, Pair(Data("", ""), false))
-            }
-        }
-    }
-
-    interface OnListItemClickListener {
-        fun onItemClick(data: Data)
-    }
-
-    interface OnStartDragListener {
-        fun onStartDrag(viewHolder: RecyclerView.ViewHolder)
-    }
-
-    companion object {
-        private const val TYPE_NASA = 0
-        private const val TYPE_NOTE = 1
-        private const val TYPE_HEADER = 2
-    }
-}
-
-data class Data(
-    val id: Int = 0,
-    val someText: String = "Text",
-    val someDescription: String? = "Description"
-)
-
-interface ItemTouchHelperAdapter {
-    fun onItemMove(fromPosition: Int, toPosition: Int)
-    fun onItemDismiss(position: Int)
-}
-
-interface ItemTouchHelperViewHolder {
-    fun onItemSelected()
-    fun onItemClear()
-}
-
-class ItemTouchHelperCallback(private val adapter: RecyclerActivityAdapter) :
-    ItemTouchHelper.Callback() {
-
-    override fun isLongPressDragEnabled(): Boolean {
-        return true
-    }
-
-    override fun isItemViewSwipeEnabled(): Boolean {
-        return true
-    }
-
-    override fun getMovementFlags(
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder
-    ): Int {
-        val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN
-        val swipeFlags = ItemTouchHelper.START or ItemTouchHelper.END
-        return makeMovementFlags(
-            dragFlags,
-            swipeFlags
-        )
-    }
-
-    override fun onMove(
-        recyclerView: RecyclerView,
-        source: RecyclerView.ViewHolder,
-        target: RecyclerView.ViewHolder
-    ): Boolean {
-        adapter.onItemMove(source.adapterPosition, target.adapterPosition)
-        return true
-    }
-
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int) {
-        adapter.onItemDismiss(viewHolder.adapterPosition)
-    }
-
-    override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-        if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
-            val itemViewHolder = viewHolder as ItemTouchHelperViewHolder
-            itemViewHolder.onItemSelected()
-        }
-        super.onSelectedChanged(viewHolder, actionState)
-    }
-
-    override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
-        super.clearView(recyclerView, viewHolder)
-        val itemViewHolder = viewHolder as ItemTouchHelperViewHolder
-        itemViewHolder.onItemClear()
-    }
-
-    override fun onChildDraw(
-        c: Canvas,
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        dX: Float,
-        dY: Float,
-        actionState: Int,
-        isCurrentlyActive: Boolean
-    ) {
-        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-            val width = viewHolder.itemView.width.toFloat()
-            val alpha = 1.0f - abs(dX) / width
-            viewHolder.itemView.alpha = alpha
-            viewHolder.itemView.translationX = dX
-        } else {
-            super.onChildDraw(
-                c, recyclerView, viewHolder, dX, dY,
-                actionState, isCurrentlyActive
-            )
-        }
-    }
 }
