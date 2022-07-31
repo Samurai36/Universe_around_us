@@ -1,11 +1,22 @@
 package viktor.khlebnikov.geekgrains.android1.universearoundus.ui.picture
 
+import android.animation.ObjectAnimator
 import android.content.Intent
-import android.icu.util.Calendar
+import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.BackgroundColorSpan
+import android.text.style.ForegroundColorSpan
+import android.transition.ChangeBounds
+import android.transition.ChangeImageTransform
+import android.transition.TransitionManager
+import android.transition.TransitionSet
 import android.view.*
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -17,29 +28,34 @@ import coil.api.load
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
+import kotlinx.android.synthetic.main.bottom_sheet_layout.*
 import kotlinx.android.synthetic.main.fragment_chips.*
+import kotlinx.android.synthetic.main.fragment_note_editor.*
+import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.android.synthetic.main.main_fragment.chipGroup
 import kotlinx.android.synthetic.main.main_fragment.view.*
 import viktor.khlebnikov.geekgrains.android1.universearoundus.R
+import viktor.khlebnikov.geekgrains.android1.universearoundus.databinding.MainFragmentBinding
 import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.MainActivity
+import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.api.ApiActivity
 import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.chips.ChipsFragment
+import viktor.khlebnikov.geekgrains.android1.universearoundus.ui.recycler.RecyclerActivity
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
 
-@RequiresApi(Build.VERSION_CODES.N)
-val c = Calendar.getInstance()
 
-@RequiresApi(Build.VERSION_CODES.N)
-val year = c.get(Calendar.YEAR)
+@RequiresApi(Build.VERSION_CODES.O)
+var formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 
-@RequiresApi(Build.VERSION_CODES.N)
-val month = c.get(Calendar.MONTH)
-
-@RequiresApi(Build.VERSION_CODES.N)
-val day = c.get(Calendar.DAY_OF_MONTH)
-var date: String = String.format("%d-%02d-%02d", year, month, day)
+@RequiresApi(Build.VERSION_CODES.O)
+val datenow = LocalDate.now()
+lateinit var date: LocalDate
 
 class PictureOfTheDayFragment : Fragment() {
 
+    private var isExpanded = false
     private lateinit var bottomSheetHeader: TextView
     private lateinit var bottomSheetContent: TextView
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
@@ -52,9 +68,10 @@ class PictureOfTheDayFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.main_fragment, container, false)
+        return MainFragmentBinding.inflate(inflater, container, false).root
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setBottomSheetBehavior(view.findViewById(R.id.bottom_sheet_container))
@@ -63,25 +80,28 @@ class PictureOfTheDayFragment : Fragment() {
                 data = Uri.parse("https://ru.wikipedia.org/wiki/${input_edit_text.text.toString()}")
             })
         }
-
+        date = datenow
         chipGroup.setOnCheckedChangeListener { chipGroup, checkedChipIds ->
             chipGroup.findViewById<Chip>(checkedChipIds)?.let {
 
                 when (it) {
+                    chiptwodaysago -> {
+                        date = datenow
+                        var period = Period.of(0, 0, 2)
+                        date = date.minus(period)
+                        Toast.makeText(context, "Показать $date", Toast.LENGTH_LONG).show()
+                        renderData()
+                    }
                     chipyesterday -> {
-                        String.format("%d-%02d-%02d", year, month, day)
-                        date = String.format("%d-%02d-%02d", year, month, (day - 1))
-                        Toast.makeText(context, "Показать $date", Toast.LENGTH_SHORT).show()
+                        date = datenow
+                        var period = Period.of(0, 0, 1)
+                        date = date.minus(period)
+                        Toast.makeText(context, "Показать $date", Toast.LENGTH_LONG).show()
                         renderData()
                     }
                     chiptoday -> {
-                        date = String.format("%d-%02d-%02d", year, month, day)
-                        Toast.makeText(context, "Показать $date", Toast.LENGTH_SHORT).show()
-                        renderData()
-                    }
-                    chiptomorrow -> {
-                        date = String.format("%d-%02d-%02d", year, month, (day + 1))
-                        Toast.makeText(context, "Показать $date", Toast.LENGTH_SHORT).show()
+                        date = datenow
+                        Toast.makeText(context, "Показать $date", Toast.LENGTH_LONG).show()
                         renderData()
                     }
                 }
@@ -92,9 +112,91 @@ class PictureOfTheDayFragment : Fragment() {
         bottomSheetContent = view.findViewById(R.id.bottom_sheet_description)
         setBottomAppBar(view)
 
+        image_view.setOnClickListener {
+            isExpanded = !isExpanded
+            TransitionManager.beginDelayedTransition(
+                main, TransitionSet()
+                    .addTransition(ChangeBounds())
+                    .addTransition(ChangeImageTransform())
+            )
+
+            val params: ViewGroup.LayoutParams = image_view.layoutParams
+            params.height =
+                if (isExpanded) ViewGroup.LayoutParams.MATCH_PARENT else ViewGroup.LayoutParams.WRAP_CONTENT
+            image_view.layoutParams = params
+            image_view.scaleType =
+                if (isExpanded) ImageView.ScaleType.CENTER_CROP else ImageView.ScaleType.FIT_CENTER
+        }
+
+        wiki_button.setOnClickListener {
+            if (!isExpanded) {
+                isExpanded = true
+                ObjectAnimator.ofFloat(wiki_button, "rotation", 0f, 360f).start()
+            }
+        }
+
+        save_btn_nasa.setOnClickListener {
+            val intent = Intent(activity, RecyclerActivity::class.java)
+            intent.putExtra("title", bottom_sheet_description_header.toString())
+            intent.putExtra("description", bottom_sheet_description.toString())
+            intent.putExtra("image", textview_url.toString())
+            intent.putExtra("date", datenow)
+        }
+
+        activity?.let {
+            bottomSheetContent.typeface =
+                Typeface.createFromAsset(it.assets, "falling-sky-font/FallingSkyBoldplus-6GZ1.otf")
+        }
+
         renderData()
     }
 
+    fun spanVidelenieSlov() {
+
+        val videlenie = requireContext().getString(R.string.span_that)
+        val videlenie2 = requireContext().getString(R.string.span_color)
+
+        val spannable = SpannableStringBuilder(bottomSheetContent.text)
+        val matcher = videlenie.toRegex()
+        val matcher2 = videlenie2.toRegex()
+        val first = matcher.find(spannable.toString())?.range?.first
+        val last = matcher.find(spannable.toString())?.range?.last
+
+        val foregroundSpan = ForegroundColorSpan(Color.RED)
+
+
+        if (first != null && last!= null) {
+            spannable.setSpan(foregroundSpan, first, last+1, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        }
+
+        if (first != null && last != null) {
+            spannable.setSpan(
+                BackgroundColorSpan(
+                    ContextCompat.getColor(requireContext(), R.color.anti_colorAccent)
+                ),
+                first,
+                last + 1,
+                Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+            )
+        }
+
+        matcher2.find(spannable.toString())?.range?.first?.let {
+            matcher2.find(spannable.toString())?.range?.last?.let { it1 ->
+                spannable.setSpan(
+                    ForegroundColorSpan(
+                        ContextCompat.getColor(requireContext(), R.color.anti_teal_700)
+                    ),
+                    it,
+                    it1 + 1,
+                    Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+                )
+            }
+        }
+
+        bottomSheetContent.text = spannable
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun renderData() {
         viewModel.getData()
             .observe(viewLifecycleOwner, { renderData(it) })
@@ -117,6 +219,7 @@ class PictureOfTheDayFragment : Fragment() {
                     view?.postDelayed({ bottomNavigationDrawerFragment.dismiss() }, 3000)
                 }
             }
+            R.id.app_bar_api -> activity?.let { startActivity(Intent(it, ApiActivity::class.java)) }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -133,6 +236,7 @@ class PictureOfTheDayFragment : Fragment() {
                     toast("ссылка пустая")
                 } else {
                     //showSuccess()
+                    textview_url.text = url
                     image_view.load(url) {
                         lifecycle(this@PictureOfTheDayFragment)
                         error(R.drawable.ic_load_error_vector)
@@ -140,6 +244,7 @@ class PictureOfTheDayFragment : Fragment() {
                     }
                     bottomSheetHeader.text = serverResponseData.title
                     bottomSheetContent.text = serverResponseData.explanation
+                    spanVidelenieSlov()
                 }
             }
             is PictureOfTheDayData.Loading -> {
@@ -179,23 +284,6 @@ class PictureOfTheDayFragment : Fragment() {
     private fun setBottomSheetBehavior(bottomSheet: ConstraintLayout) {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-//        bottomSheetBehavior.addBottomSheetCallback(object :
-//            BottomSheetBehavior.BottomSheetCallback() {
-//            override fun onStateChanged(bottomSheet: View, newState: Int) {
-//                when (newState) {
-//                    BottomSheetBehavior.STATE_DRAGGING -> toast("STATE_DRAGGING")
-//                    BottomSheetBehavior.STATE_COLLAPSED -> toast("STATE_COLLAPSED")
-//                    BottomSheetBehavior.STATE_EXPANDED -> toast("STATE_EXPANDED")
-//                    BottomSheetBehavior.STATE_HALF_EXPANDED -> toast("STATE_HALF_EXPANDED")
-//                    BottomSheetBehavior.STATE_HIDDEN -> toast("STATE_HIDDEN")
-//                    BottomSheetBehavior.STATE_SETTLING -> toast("STATE_SETTLING")
-//                }
-//            }
-//
-//            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-//                toast("not implemented")
-//            }
-//        })
     }
 
     private fun Fragment.toast(string: String?) {

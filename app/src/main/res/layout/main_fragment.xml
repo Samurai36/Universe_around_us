@@ -10,18 +10,32 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.constraintlayout.motion.widget.MotionLayout
             android:id="@+id/main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingStart="10dp"
-            android:paddingEnd="10dp">
+            android:paddingEnd="10dp"
+            app:layoutDescription="@xml/motion_scene">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/wiki_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="15dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/input_layout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/input_layout"
+                app:srcCompat="@drawable/ic_wikipedia" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_layout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:focusable="false"
                 android:hint="@string/search_wiki"
                 app:counterEnabled="true"
                 app:counterMaxLength="20"
@@ -30,38 +44,7 @@
                 app:endIconMode="custom"
                 app:helperText="@string/wiki_helper_text"
                 app:layout_constraintBottom_toTopOf="@+id/image_view"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chipGroup"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="11dp"
-                    app:singleSelection="true">
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipyesterday"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/yesterday_picture" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chiptoday"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/today_picture" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chiptomorrow"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tomorrow_picture" />
-                </com.google.android.material.chip.ChipGroup>
+                app:layout_constraintStart_toEndOf="parent">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_edit_text"
@@ -70,10 +53,10 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <viktor.khlebnikov.geekgrains.android1.universearoundus.ui.util.EquilateralImageView
+            <com.github.chrisbanes.photoview.PhotoView
                 android:id="@+id/image_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="500dp"
                 android:layout_gravity="center"
                 android:contentDescription="@string/photo_of_the_day_stub"
                 android:scaleType="fitCenter"
@@ -83,6 +66,56 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_no_photo_vector" />
 
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="11dp"
+                app:layout_constraintBottom_toBottomOf="@id/input_edit_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/image_view"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chiptwodaysago"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/two_days_ago_picture" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipyesterday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/yesterday_picture" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chiptoday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/today_picture" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/save_btn_nasa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Сохранить"
+                app:layout_constraintTop_toBottomOf="@+id/chipGroup"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/textview_url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:hint="здесь будет ссылка на видео"
+                app:layout_constraintTop_toBottomOf="@+id/image_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+
             <FrameLayout
                 android:id="@+id/loadingLayout"
                 android:layout_width="match_parent"
@@ -91,12 +124,11 @@
                 android:visibility="gone">
 
                 <ProgressBar
-                    style="?android:attr/progressBarStyleLarge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center" />
             </FrameLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.motion.widget.MotionLayout>
     </androidx.core.widget.NestedScrollView>
 
     <include layout="@layout/bottom_sheet_layout" />
@@ -106,7 +138,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:backgroundTint="@color/colorPrimary"
         app:fabAlignmentMode="center"
         app:hideOnScroll="true"
         app:layout_scrollFlags="scroll|enterAlways"
@@ -116,7 +147,6 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorAccent"
         app:layout_anchor="@id/bottom_app_bar"
         app:srcCompat="@drawable/ic_plus_fab"
         app:tint="#FFFFFF" />
